@@ -2,42 +2,18 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"log"
 
-	"golang.design/x/clipboard"
+	"github.com/Puker228/goclip/internal/cliphandler"
 )
 
 func main() {
-	if err := clipboard.Init(); err != nil {
-		panic(err)
+	mgr, err := cliphandler.NewManager()
+	if err != nil {
+		log.Fatalf("Error: %v", err)
 	}
 
-	var history []string
-	seen := map[string]bool{}
+	log.Println("Service started")
 
-	add := func(data []byte) {
-		if len(data) == 0 {
-			return
-		}
-
-		text := string(data)
-		if seen[text] {
-			return
-		}
-
-		seen[text] = true
-		history = append(history, text)
-
-		fmt.Println("clipboard history:")
-		for i, item := range history {
-			fmt.Printf("%d: %s\n", i+1, item)
-		}
-		fmt.Println()
-	}
-
-	add(clipboard.Read(clipboard.FmtText))
-
-	for data := range clipboard.Watch(context.Background(), clipboard.FmtText) {
-		add(data)
-	}
+	mgr.StartWatching(context.Background())
 }
