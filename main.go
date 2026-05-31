@@ -22,7 +22,7 @@ func main() {
 	go mgr.StartWatching(context.Background())
 
 	myApp := app.New()
-	myWindow := myApp.NewWindow("List Widget")
+	myWindow := myApp.NewWindow("goclip")
 
 	list := widget.NewListWithData(
 		mgr.DataList,
