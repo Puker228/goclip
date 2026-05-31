@@ -4,13 +4,17 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"sync"
 
+	"fyne.io/fyne/v2/data/binding"
 	"golang.design/x/clipboard"
 )
 
 type Manager struct {
-	history []string
-	seen    map[string]bool
+	mu       sync.Mutex
+	history  []string
+	seen     map[string]bool
+	DataList binding.StringList
 }
 
 func NewManager() (*Manager, error) {
@@ -19,8 +23,9 @@ func NewManager() (*Manager, error) {
 	}
 
 	return &Manager{
-		history: make([]string, 0),
-		seen:    make(map[string]bool),
+		history:  make([]string, 0),
+		seen:     make(map[string]bool),
+		DataList: binding.NewStringList(),
 	}, nil
 }
 
@@ -30,12 +35,20 @@ func (m *Manager) Add(data []byte) {
 	}
 
 	text := string(data)
-	if m.seen[cleanText(text)] {
+	cleaned := cleanText(text)
+
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	if m.seen[cleaned] {
 		return
 	}
 
-	m.seen[cleanText(text)] = true
-	m.history = append(m.history, text)
+	trimmedText := strings.TrimSpace(text)
+	m.seen[cleaned] = true
+	m.history = append(m.history, trimmedText)
+
+	_ = m.DataList.Append(trimmedText)
 
 	m.printHistory()
 }
