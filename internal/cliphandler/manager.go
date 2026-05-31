@@ -3,6 +3,7 @@ package cliphandler
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"golang.design/x/clipboard"
 )
@@ -29,11 +30,11 @@ func (m *Manager) Add(data []byte) {
 	}
 
 	text := string(data)
-	if m.seen[text] {
+	if m.seen[cleanText(text)] {
 		return
 	}
 
-	m.seen[text] = true
+	m.seen[cleanText(text)] = true
 	m.history = append(m.history, text)
 
 	m.printHistory()
@@ -53,4 +54,8 @@ func (m *Manager) printHistory() {
 		fmt.Printf("%d: %s\n", i+1, item)
 	}
 	fmt.Println()
+}
+
+func cleanText(sourceText string) string {
+	return strings.TrimSpace(strings.ToLower(sourceText))
 }
