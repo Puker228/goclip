@@ -1,7 +1,7 @@
 .PHONY: build run run-bin start release test fmt build-all
 
 APP := goclip
-CMD := ./cmd/goclip
+CMD := .
 DIST_DIR := dist
 LDFLAGS := -s -w
 
@@ -24,7 +24,10 @@ test:
 	go test ./...
 
 fmt:
-	gofmt -w cmd internal
+	gofmt -w main.go internal
+
+$(DIST_DIR):
+	mkdir -p $(DIST_DIR)
 
 build-all: $(DIST_DIR)
 	GOOS=darwin  GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -ldflags="$(LDFLAGS)" -o $(DIST_DIR)/$(APP)-darwin-amd64   $(CMD)
