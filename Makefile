@@ -14,9 +14,6 @@ run:
 run-bin:
 	./$(APP)
 
-start: build
-	./$(APP)
-
 release: build
 	./$(APP)
 
