@@ -18,5 +18,5 @@ func main() {
 
 	go mgr.StartWatching(context.Background())
 
-	ui.Run(mgr.DataList, mgr.Copy)
+	ui.Run(mgr.DataList, mgr.Copy, mgr.Clean)
 }

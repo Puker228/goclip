@@ -54,6 +54,15 @@ func (m *Manager) Add(data []byte) {
 	_ = m.DataList.Append(trimmedText)
 }
 
+func (m *Manager) Clean() {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	m.history = m.history[:0]
+	m.seen = make(map[string]bool)
+	_ = m.DataList.Set([]string{})
+}
+
 func (m *Manager) StartWatching(ctx context.Context) {
 	m.Add(clipboard.Read(clipboard.FmtText))
 
