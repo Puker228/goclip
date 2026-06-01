@@ -28,6 +28,10 @@ func NewManager() (*Manager, error) {
 	}, nil
 }
 
+func (m *Manager) Copy(text string) {
+	clipboard.Write(clipboard.FmtText, []byte(text))
+}
+
 func (m *Manager) Add(data []byte) {
 	if len(data) == 0 {
 		return
