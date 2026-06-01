@@ -21,7 +21,7 @@ func preview(s string, max int) string {
 	return string(r[:max]) + "…"
 }
 
-func Run(items binding.StringList, onCopy func(string)) {
+func Run(items binding.StringList, onCopy func(string), onClean func()) {
 	myApp := app.New()
 	myWindow := myApp.NewWindow("goclip")
 
@@ -55,7 +55,12 @@ func Run(items binding.StringList, onCopy func(string)) {
 		},
 	)
 
-	myWindow.SetContent(list)
+	cleanButton := widget.NewButtonWithIcon("Clean", theme.DeleteIcon(), onClean)
+	cleanButton.Importance = widget.HighImportance
+
+	footer := container.NewBorder(nil, nil, nil, cleanButton)
+
+	myWindow.SetContent(container.NewBorder(nil, footer, nil, nil, list))
 	myWindow.Resize(fyne.NewSize(400, 300))
 	myWindow.ShowAndRun()
 }
