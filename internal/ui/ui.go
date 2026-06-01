@@ -5,7 +5,9 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/data/binding"
+	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 )
 
@@ -19,7 +21,7 @@ func preview(s string, max int) string {
 	return string(r[:max]) + "…"
 }
 
-func Run(items binding.StringList) {
+func Run(items binding.StringList, onCopy func(string)) {
 	myApp := app.New()
 	myWindow := myApp.NewWindow("goclip")
 
@@ -30,7 +32,10 @@ func Run(items binding.StringList) {
 			label.Wrapping = fyne.TextWrapOff
 			label.Truncation = fyne.TextTruncateEllipsis
 
-			return label
+			copyButton := widget.NewButtonWithIcon("", theme.ContentCopyIcon(), nil)
+			copyButton.Importance = widget.LowImportance
+
+			return container.NewBorder(nil, nil, nil, copyButton, label)
 		},
 		func(item binding.DataItem, obj fyne.CanvasObject) {
 			textBinding := item.(binding.String)
@@ -39,7 +44,14 @@ func Run(items binding.StringList) {
 				return
 			}
 
-			obj.(*widget.Label).SetText(preview(val, 100))
+			row := obj.(*fyne.Container)
+			label := row.Objects[0].(*widget.Label)
+			copyButton := row.Objects[1].(*widget.Button)
+
+			label.SetText(preview(val, 100))
+			copyButton.OnTapped = func() {
+				onCopy(val)
+			}
 		},
 	)
 
